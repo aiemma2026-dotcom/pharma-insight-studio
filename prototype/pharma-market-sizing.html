@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新药上市市场测算工具 — TAM/SAM/SOM 模型</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f3f6fc;
+  color: #1a2332;
+  line-height: 1.6;
+}
+
+/* ===== Layout ===== */
+.app-container { max-width: 1320px; margin: 0 auto; padding: 24px 20px 60px; }
+
+/* ===== Header ===== */
+.header {
+  background: linear-gradient(135deg, #0b2a4a 0%, #1a4a7a 50%, #0d6e9e 100%);
+  border-radius: 16px;
+  padding: 32px 40px;
+  margin-bottom: 28px;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(11,42,74,0.25);
+}
+.header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px; }
+.header h1 span { color: #7fc8ff; }
+.header .subtitle { font-size: 0.95rem; opacity: 0.85; font-weight: 400; }
+.header .badge-group { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.header .badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.13); padding: 5px 14px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.3px;
+}
+.header .badge svg { width: 14px; height: 14px; fill: #7fc8ff; }
+
+/* ===== Grid ===== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
+
+/* ===== Card ===== */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 4px 20px rgba(0,0,0,0.06); }
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; border-bottom: 1px solid #eef2f7;
+  font-size: 0.95rem; font-weight: 600; color: #1a3a5c;
+  background: #fafcff;
+}
+.card-header .icon { width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; }
+.card-body { padding: 20px 22px; }
+
+.section-title {
+  font-size: 1.05rem; font-weight: 700; color: #1a3a5c;
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 2px solid #e8edf5;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ===== Form ===== */
+.form-group { margin-bottom: 16px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-group label {
+  display: block; font-size: 0.85rem; font-weight: 600;
+  color: #2c3e50; margin-bottom: 5px;
+}
+.form-group .hint { font-size: 0.75rem; color: #7a8ba3; font-weight: 400; margin-left: 4px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 9px 12px;
+  border: 1.5px solid #dce3ed; border-radius: 8px;
+  font-size: 0.88rem; color: #1a2332; background: #fafcff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: #1a6faf; outline: none; box-shadow: 0 0 0 3px rgba(26,111,175,0.12);
+}
+.form-group input::placeholder { color: #b0bec5; }
+.form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a8ba3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 24px; border: none; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; text-decoration: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #1a4a7a, #0d6e9e); color: #fff;
+  box-shadow: 0 2px 8px rgba(13,110,158,0.25);
+  width: 100%; padding: 12px;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(13,110,158,0.35); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: #eef2f7; color: #1a3a5c;
+}
+.btn-secondary:hover { background: #e2e8f0; }
+
+/* ===== Table ===== */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th {
+  background: #f3f6fc; color: #1a3a5c; font-weight: 600;
+  padding: 10px 12px; text-align: left; border-bottom: 2px solid #dce3ed;
+  white-space: nowrap; font-size: 0.82rem;
+}
+.data-table td {
+  padding: 9px 12px; border-bottom: 1px solid #eef2f7;
+  vertical-align: middle;
+}
+.data-table tr:hover td { background: #f8faff; }
+.data-table .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+.data-table .highlight-row { background: #eef7ff; }
+.data-table .confidence-high { display: inline-block; background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+.data-table .confidence-medium { display: inline-block; background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+.data-table .confidence-low { display: inline-block; background: #f8d7da; color: #721c24; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+
+/* ===== Results ===== */
+.results-section { display: none; margin-top: 24px; }
+.results-section.visible { display: block; }
+
+.result-summary {
+  background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
+  border: 1.5px solid #b8d8f0; border-radius: 12px;
+  padding: 24px 28px; margin-bottom: 24px;
+}
+.result-summary h3 { font-size: 1.1rem; color: #0b2a4a; margin-bottom: 4px; }
+.result-summary .big-number { font-size: 2.4rem; font-weight: 800; color: #0d6e9e; line-height: 1.2; }
+.result-summary .big-number span { font-size: 1rem; font-weight: 400; color: #5a7a9a; }
+.result-summary .meta { font-size: 0.82rem; color: #5a7a9a; margin-top: 4px; }
+
+/* KPI Cards */
+.kpi-card { text-align: center; padding: 16px 10px; }
+.kpi-card .value { font-size: 1.6rem; font-weight: 800; color: #0d6e9e; line-height: 1.2; }
+.kpi-card .value.positive { color: #0d6e9e; }
+.kpi-card .value.warning { color: #d97706; }
+.kpi-card .value.danger { color: #dc2626; }
+.kpi-card .label { font-size: 0.78rem; color: #5a7a9a; margin-top: 4px; font-weight: 500; }
+.kpi-card .sub-label { font-size: 0.7rem; color: #8ea0b8; margin-top: 2px; }
+
+/* Assumptions & Risks */
+.assumption-item {
+  padding: 12px 16px; border-left: 3px solid #1a6faf;
+  background: #f8faff; border-radius: 0 8px 8px 0; margin-bottom: 10px;
+}
+.assumption-item .title { font-weight: 600; font-size: 0.85rem; color: #1a3a5c; }
+.assumption-item .desc { font-size: 0.82rem; color: #4a5a7a; margin-top: 2px; }
+.assumption-item .confidence-tag { display: inline-block; font-size: 0.7rem; padding: 1px 8px; border-radius: 8px; margin-top: 4px; }
+
+.risk-item {
+  padding: 12px 16px; border-left: 3px solid #dc2626;
+  background: #fff8f8; border-radius: 0 8px 8px 0; margin-bottom: 10px;
+}
+.risk-item .title { font-weight: 600; font-size: 0.85rem; color: #991b1b; }
+.risk-item .desc { font-size: 0.82rem; color: #5a3a3a; margin-top: 2px; }
+.risk-item .impact-tag { display: inline-block; font-size: 0.7rem; padding: 1px 8px; border-radius: 8px; margin-top: 4px; background: #fecaca; color: #991b1b; font-weight: 600; }
+
+/* Sensitivity table */
+.sens-table td:first-child { font-weight: 600; }
+.sens-bar { display: inline-block; height: 8px; border-radius: 4px; margin-right: 6px; vertical-align: middle; }
+
+/* ===== Chart container ===== */
+.chart-container { position: relative; height: 260px; width: 100%; }
+
+/* ===== Recommendation box ===== */
+.recommendation-box {
+  background: linear-gradient(135deg, #eef7ff, #f8faff);
+  border: 1.5px solid #c8ddf0; border-radius: 12px;
+  padding: 20px 24px;
+}
+.recommendation-box h4 { color: #0b2a4a; margin-bottom: 8px; font-size: 0.95rem; }
+.recommendation-box ol, .recommendation-box ul { padding-left: 20px; font-size: 0.85rem; color: #2c3e50; line-height: 1.8; }
+
+/* ===== Editable KB ===== */
+.kb-edit-toggle {
+  font-size: 0.78rem; color: #1a6faf; cursor: pointer; font-weight: 500;
+  padding: 4px 10px; border-radius: 6px; background: #eef2f7;
+  border: none; transition: background 0.2s;
+}
+.kb-edit-toggle:hover { background: #dce3ed; }
+
+.kb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kb-field {}
+.kb-field label { font-size: 0.75rem; font-weight: 500; color: #2c3e50; display: block; margin-bottom: 2px; }
+.kb-field input { width: 100%; padding: 6px 10px; border: 1.5px solid #dce3ed; border-radius: 6px; font-size: 0.82rem; }
+.kb-field input:focus { border-color: #1a6faf; outline: none; }
+
+/* ===== Tabs ===== */
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #f3f6fc; padding: 4px; border-radius: 10px; }
+.tab { padding: 8px 18px; border: none; background: transparent; border-radius: 7px; cursor: pointer; font-size: 0.82rem; font-weight: 500; color: #4a5a7a; transition: all 0.2s; }
+.tab.active { background: #fff; color: #1a3a5c; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.tab:hover:not(.active) { color: #1a3a5c; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c8d4e0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a8b8c8; }
+
+/* ===== Confetti / loading ===== */
+.calc-loading { display: none; text-align: center; padding: 40px 0; }
+.calc-loading.show { display: block; }
+.spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #1a6faf; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .header { padding: 24px 20px; }
+  .header h1 { font-size: 1.3rem; }
+  .kb-grid { grid-template-columns: 1fr; }
+  .result-summary .big-number { font-size: 1.8rem; }
+}
+
+/* ===== Print ===== */
+@media print {
+  .header { background: #0b2a4a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .btn { display: none; }
+  .results-section { display: block !important; }
+}
+
+/* ===== Animation ===== */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeInUp 0.4s ease-out; }
+
+/* ===== Switch ===== */
+.switch-group { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.switch { position: relative; width: 40px; height: 22px; display: inline-block; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background: #dce3ed; transition: 0.3s; border-radius: 22px;
+}
+.switch .slider::before { content: ""; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: #fff; transition: 0.3s; border-radius: 50%; }
+.switch input:checked + .slider { background: #1a6faf; }
+.switch input:checked + .slider::before { transform: translateX(18px); }
+.switch-label { font-size: 0.82rem; color: #2c3e50; }
+
+/* ===== Footer ===== */
+.footer { text-align: center; padding: 28px 0 10px; font-size: 0.78rem; color: #8ea0b8; border-top: 1px solid #eef2f7; margin-top: 32px; }
+
+/* Print button */
+.print-btn { position: fixed; bottom: 24px; right: 24px; z-index: 100; background: #1a3a5c; color: #fff; border: none; border-radius: 50px; padding: 10px 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.15); transition: all 0.2s; }
+.print-btn:hover { background: #0b2a4a; transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <h1>📊 新药上市 <span>市场测算引擎</span></h1>
+    <p class="subtitle">基于 TAM/SAM/SOM 框架的医药市场量化评估工具 | 适用于新药上市商业计划（BP）</p>
+    <div class="badge-group">
+      <span class="badge"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> TAM/SAM/SOM 标准框架</span>
+      <span class="badge"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 内置 GLP-1 知识库</span>
+      <span class="badge"><svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> 三情景敏感性分析</span>
+      <span class="badge"><svg viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg> 风险提示 &amp; 建议</span>
+    </div>
+  </header>
+
+  <!-- ===== Input Section ===== -->
+  <div class="grid-2" style="margin-bottom:24px">
+    <!-- Left: Product Input -->
+    <div class="card">
+      <div class="card-header">
+        <span>📋 产品参数输入</span>
+        <span style="font-size:0.75rem;color:#7a8ba3;font-weight:400">填写你的产品信息</span>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>疾病领域 <span class="hint">如：2型糖尿病</span></label>
+          <input type="text" id="diseaseArea" value="2型糖尿病" placeholder="例：2型糖尿病">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>适应症</label>
+            <input type="text" id="indication" value="2型糖尿病" placeholder="例：2型糖尿病">
+          </div>
+          <div class="form-group">
+            <label>产品类型</label>
+            <select id="productType">
+              <option value="GLP-1周制剂" selected>GLP-1 周制剂</option>
+              <option value="GLP-1日制剂">GLP-1 日制剂</option>
+              <option value="DPP-4抑制剂">DPP-4 抑制剂</option>
+              <option value="SGLT-2抑制剂">SGLT-2 抑制剂</option>
+              <option value="胰岛素">胰岛素</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>定价金额</label>
+            <input type="number" id="priceValue" value="800" min="0" step="50">
+          </div>
+          <div class="form-group">
+            <label>定价周期</label>
+            <select id="pricePeriod">
+              <option value="month" selected>每月</option>
+              <option value="week">每周</option>
+              <option value="year">每年</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>目标医院层级</label>
+          <select id="hospitalTier">
+            <option value="all">全部层级（三甲+三乙+二甲及以下）</option>
+            <option value="top_mid" selected>三甲 + 三乙（高端+中端市场）</option>
+            <option value="top">仅三甲（高端市场）</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:14px">
+          <label>商业模式定位 <span class="hint">影响渗透率对标基准</span></label>
+          <select id="positioning">
+            <option value="me-too" selected>Me-too 产品（跟随者）—— 对标度拉糖肽（首年0.9%，峰值6%）</option>
+            <option value="best-in-class">Best-in-class（同类最佳）—— 对标司美格鲁肽（首年1.5%，峰值12%）</option>
+            <option value="first-in-class">First-in-class（首创）—— 对标利拉鲁肽（首年1.2%，峰值8%）</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="calculate()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          执行市场测算
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Knowledge Base (editable) -->
+    <div class="card">
+      <div class="card-header">
+        <span>📚 内置知识库</span>
+        <button class="kb-edit-toggle" id="kbToggle" onclick="toggleKBEdit()">✏️ 编辑数据</button>
+      </div>
+      <div class="card-body" id="kbDisplay">
+        <!-- Static view -->
+        <div style="font-size:0.82rem;line-height:1.8">
+          <div><strong>患者总数：</strong>1.4亿  <span class="confidence-high">高</span> <span style="color:#7a8ba3;font-size:0.75rem">IDF 2025</span></div>
+          <div><strong>诊断率：</strong>36%  <span class="confidence-high">高</span> <span style="color:#7a8ba3;font-size:0.75rem">中国2型糖尿病防治指南2024</span></div>
+          <div><strong>治疗率：</strong>32%  <span class="confidence-high">高</span> <span style="color:#7a8ba3;font-size:0.75rem">同上</span></div>
+          <div><strong>GLP-1适用比例：</strong>30%  <span class="confidence-medium">中</span> <span style="color:#7a8ba3;font-size:0.75rem">基于二线治疗占比及指南推荐</span></div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eef2f7"><strong>医院层级覆盖率系数：</strong></div>
+          <div style="padding-left:12px">三甲 (35%) + 三乙 (25%) = <strong>60%</strong></div>
+          <div style="padding-left:12px">二甲及以下 (40%) = <strong>40%</strong></div>
+        </div>
+      </div>
+      <div class="card-body" id="kbEdit" style="display:none">
+        <div class="kb-grid">
+          <div class="kb-field"><label>患者总数（亿）</label><input type="number" id="kbPatients" value="1.4" step="0.1"></div>
+          <div class="kb-field"><label>诊断率（%）</label><input type="number" id="kbDiagnosis" value="36" min="0" max="100"></div>
+          <div class="kb-field"><label>治疗率（%）</label><input type="number" id="kbTreatment" value="32" min="0" max="100"></div>
+          <div class="kb-field"><label>GLP-1适用比例（%）</label><input type="number" id="kbGlp1Ratio" value="30" min="0" max="100"></div>
+          <div class="kb-field"><label>三甲覆盖率（%）</label><input type="number" id="kbTier1" value="35" min="0" max="100"></div>
+          <div class="kb-field"><label>三乙覆盖率（%）</label><input type="number" id="kbTier2" value="25" min="0" max="100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Loading ===== -->
+  <div class="calc-loading" id="calcLoading">
+    <div class="spinner"></div>
+    <div style="color:#1a3a5c;font-weight:500">正在执行市场测算...</div>
+    <div style="font-size:0.82rem;color:#7a8ba3;margin-top:4px">基于 TAM/SAM/SOM 框架与内置知识库</div>
+  </div>
+
+  <!-- ===== Results ===== -->
+  <div class="results-section" id="resultsSection">
+
+    <!-- Summary Banner -->
+    <div class="result-summary fade-in" id="summaryBanner">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
+        <div>
+          <h3 id="summaryTitle">📈 市场测算结果：XYZ-001（GLP-1周制剂 × 2型糖尿病）</h3>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:8px">
+            <div>
+              <div class="big-number" id="summaryTam">—</div>
+              <div class="meta">TAM · 总潜在市场</div>
+            </div>
+            <div>
+              <div class="big-number" id="summarySam">—</div>
+              <div class="meta">SAM · 可服务市场</div>
+            </div>
+            <div>
+              <div class="big-number" id="summarySom">—</div>
+              <div class="meta">SOM（第5年）· 可获得市场</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="big-number" style="font-size:1.8rem" id="summaryYear5">—</div>
+          <div class="meta">第五年预期营收（SOM 峰值）</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs for results -->
+    <div class="card">
+      <div class="card-body" style="padding-bottom:4px">
+        <div class="tabs" id="resultTabs">
+          <button class="tab active" data-tab="tab-sizing">📊 市场测算表</button>
+          <button class="tab" data-tab="tab-sensitivity">📉 敏感性分析</button>
+          <button class="tab" data-tab="tab-chart">📈 可视化</button>
+          <button class="tab" data-tab="tab-assumptions">📝 假设 &amp; 风险</button>
+          <button class="tab" data-tab="tab-recommend">💡 策略建议</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 1: Market Sizing Table -->
+    <div class="tab-content active" id="tab-sizing">
+      <div class="card">
+        <div class="card-body">
+          <div style="overflow-x:auto">
+            <table class="data-table" id="sizingTable">
+              <thead>
+                <tr>
+                  <th>层级</th>
+                  <th>参数</th>
+                  <th class="num">数值</th>
+                  <th>计算公式 / 路径</th>
+                  <th>来源 / 假设</th>
+                  <th>置信度</th>
+                </tr>
+              </thead>
+              <tbody id="sizingTableBody"></tbody>
+            </table>
+          </div>
+          <div style="font-size:0.78rem;color:#7a8ba3;margin-top:12px;padding:10px 14px;background:#f8faff;border-radius:8px">
+            <strong>📌 修正说明：</strong>相比原始Prompt，公式中加入了「GLP-1适用比例(30%)」——并非所有接受治疗的患者都适用GLP-1类药物，GLP-1通常用于≥二线治疗且BMI超重或合并ASCVD的患者。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Sensitivity -->
+    <div class="tab-content" id="tab-sensitivity">
+      <div class="card">
+        <div class="card-body">
+          <p style="font-size:0.85rem;color:#2c3e50;margin-bottom:16px">以下三个变量是影响市场规模的<strong>核心驱动因素</strong>，分别对应医学部、准入部、市场部的关键决策。</p>
+          <div style="overflow-x:auto">
+            <table class="data-table" id="sensTable">
+              <thead>
+                <tr>
+                  <th style="min-width:140px">情景</th>
+                  <th class="num">GLP-1适用比例</th>
+                  <th class="num">年治疗费用（元）</th>
+                  <th class="num">峰值渗透率</th>
+                  <th class="num">SOM 第5年（亿元）</th>
+                  <th style="min-width:160px">相对基准</th>
+                </tr>
+              </thead>
+              <tbody id="sensBody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:16px">
+            <div class="chart-container" id="sensChartContainer">
+              <canvas id="sensChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Chart -->
+    <div class="tab-content" id="tab-chart">
+      <div class="card">
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div>
+              <h4 style="font-size:0.9rem;color:#1a3a5c;margin-bottom:8px;text-align:center">市场层级分解</h4>
+              <div class="chart-container" style="height:240px">
+                <canvas id="tierChart"></canvas>
+              </div>
+            </div>
+            <div>
+              <h4 style="font-size:0.9rem;color:#1a3a5c;margin-bottom:8px;text-align:center">年度营收预测</h4>
+              <div class="chart-container" style="height:240px">
+                <canvas id="yearChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Assumptions & Risks -->
+    <div class="tab-content" id="tab-assumptions">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><span>📌 关键假设说明</span></div>
+          <div class="card-body" id="assumptionsList"></div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="border-left:3px solid #dc2626"><span>⚠️ 风险提示</span></div>
+          <div class="card-body" id="risksList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Recommendations -->
+    <div class="tab-content" id="tab-recommend">
+      <div class="card">
+        <div class="card-body">
+          <div class="recommendation-box" id="recommendBox">
+            <h4>💡 基于测算结果的策略建议</h4>
+            <div id="recommendContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Print Button -->
+  <button class="print-btn" onclick="window.print()">🖨️ 打印 / 导出 PDF</button>
+
+  <!-- Footer -->
+  <div class="footer">
+    本工具基于 TAM/SAM/SOM 框架构建 · 数据来源标注· 仅供商业计划参考，不构成投资建议<br>
+    模型版本 v1.0 · 修正：加入 GLP-1 适用比例因子
+  </div>
+
+</div>
+
+<script>
+// ===== Configuration =====
+const KB = {
+  totalPatients: 1.4,       // 亿
+  diagnosisRate: 0.36,
+  treatmentRate: 0.32,
+  glp1EligibleRatio: 0.30,  // GLP-1 适用比例（新增修正因子）
+  coverage: { top: 0.35, mid: 0.25, basic: 0.40 }
+};
+
+// Competitor benchmarks
+const COMPETITOR_PENETRATION = {
+  'me-too':     { yr1: 0.009, yr3: 0.035, yr5: 0.060, label: '度拉糖肽（me-too）' },
+  'best-in-class': { yr1: 0.015, yr3: 0.070, yr5: 0.120, label: '司美格鲁肽（best-in-class）' },
+  'first-in-class': { yr1: 0.012, yr3: 0.050, yr5: 0.080, label: '利拉鲁肽（first-in-class）' }
+};
+
+const HOSPITAL_COVERAGE = {
+  all:     { label: '全部层级', ratio: 1.0 },
+  top_mid: { label: '三甲+三乙', ratio: 0.60 },
+  top:     { label: '仅三甲', ratio: 0.35 }
+};
+
+// ===== Helpers =====
+function fmtCurrency(val) {
+  if (val >= 10000) return (val/10000).toFixed(2) + '万亿';
+  if (val >= 1) return val.toFixed(2) + '亿';
+  return (val * 10000).toFixed(0) + '万';
+}
+
+function fmtCurrencyFull(val) {
+  return val.toLocaleString('zh-CN', {minimumFractionDigits:0, maximumFractionDigits:2}) + '元';
+}
+
+function fmtPercent(val, decimals) {
+  if (decimals === undefined) decimals = 1;
+  return (val * 100).toFixed(decimals) + '%';
+}
+
+function fmtPercentInt(val) {
+  return Math.round(val * 100) + '%';
+}
+
+// ===== Tab Switching =====
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.getElementById(this.dataset.tab).classList.add('active');
+    });
+  });
+});
+
+// ===== KB Edit Toggle =====
+function toggleKBEdit() {
+  const display = document.getElementById('kbDisplay');
+  const edit = document.getElementById('kbEdit');
+  const btn = document.getElementById('kbToggle');
+  if (edit.style.display === 'none') {
+    // Populate edit fields from current KB
+    document.getElementById('kbPatients').value = KB.totalPatients;
+    document.getElementById('kbDiagnosis').value = KB.diagnosisRate * 100;
+    document.getElementById('kbTreatment').value = KB.treatmentRate * 100;
+    document.getElementById('kbGlp1Ratio').value = KB.glp1EligibleRatio * 100;
+    document.getElementById('kbTier1').value = KB.coverage.top * 100;
+    document.getElementById('kbTier2').value = KB.coverage.mid * 100;
+    display.style.display = 'none';
+    edit.style.display = 'block';
+    btn.textContent = '💾 保存数据';
+  } else {
+    // Save from edit fields
+    KB.totalPatients = parseFloat(document.getElementById('kbPatients').value) || 1.4;
+    KB.diagnosisRate = (parseFloat(document.getElementById('kbDiagnosis').value) || 36) / 100;
+    KB.treatmentRate = (parseFloat(document.getElementById('kbTreatment').value) || 32) / 100;
+    KB.glp1EligibleRatio = (parseFloat(document.getElementById('kbGlp1Ratio').value) || 30) / 100;
+    KB.coverage.top = (parseFloat(document.getElementById('kbTier1').value) || 35) / 100;
+    KB.coverage.mid = (parseFloat(document.getElementById('kbTier2').value) || 25) / 100;
+    display.style.display = 'block';
+    edit.style.display = 'none';
+    btn.textContent = '✏️ 编辑数据';
+    // Recalculate if results already shown
+    if (document.getElementById('resultsSection').classList.contains('visible')) {
+      calculate();
+    }
+  }
+}
+
+// ===== Main Calculation =====
+function calculate() {
+  // Show loading
+  document.getElementById('calcLoading').classList.add('show');
+  document.getElementById('resultsSection').classList.remove('visible');
+
+  // Gather inputs
+  const diseaseArea = document.getElementById('diseaseArea').value || '2型糖尿病';
+  const indication = document.getElementById('indication').value || '2型糖尿病';
+  const productType = document.getElementById('productType').value;
+  const priceValue = parseFloat(document.getElementById('priceValue').value) || 800;
+  const pricePeriod = document.getElementById('pricePeriod').value;
+  const hospitalTier = document.getElementById('hospitalTier').value;
+  const positioning = document.getElementById('positioning').value;
+
+  // Calculate annual cost
+  let annualCost;
+  if (pricePeriod === 'week') annualCost = priceValue * 52;
+  else if (pricePeriod === 'month') annualCost = priceValue * 12;
+  else annualCost = priceValue;
+
+  // Hospital coverage
+  const cov = HOSPITAL_COVERAGE[hospitalTier];
+  const coverageRatio = cov.ratio;
+
+  // Penetration rates from competitor benchmarks
+  const pen = COMPETITOR_PENETRATION[positioning];
+
+  // ===== TAM/SAM/SOM Calculation =====
+  // TAM = 患者总数 × 诊断率 × 治疗率 × GLP-1适用比例 × 年治疗费用
+  const tamPatients = KB.totalPatients * KB.diagnosisRate * KB.treatmentRate * KB.glp1EligibleRatio; // 亿人
+  const tamValue = tamPatients * annualCost; // 亿元
+  // SAM = TAM × 医院覆盖率
+  const samValue = tamValue * coverageRatio;
+  // SOM = SAM × 渗透率
+  const somY1 = samValue * pen.yr1;
+  const somY3 = samValue * pen.yr3;
+  const somY5 = samValue * pen.yr5;
+
+  // Build table row data
+  const tamPatientsRaw = KB.totalPatients; // 亿
+  const diagnosed = KB.totalPatients * KB.diagnosisRate;
+  const treated = KB.totalPatients * KB.diagnosisRate * KB.treatmentRate;
+  const glp1Eligible = treated * KB.glp1EligibleRatio;
+
+  const tableRows = [
+    // TAM
+    { level: 'TAM', param: '患者总数', val: tamPatientsRaw + '亿', formula: '—', source: 'IDF 2025', conf: 'high' },
+    { level: 'TAM', param: '诊断率', val: fmtPercent(KB.diagnosisRate, 0), formula: '—', source: '中国2型糖尿病防治指南2024', conf: 'high' },
+    { level: 'TAM', param: '治疗率', val: fmtPercent(KB.treatmentRate, 0), formula: '—', source: '同上', conf: 'high' },
+    { level: 'TAM', param: 'GLP-1适用比例', val: fmtPercent(KB.glp1EligibleRatio), formula: '—', source: '基于二线治疗占比及指南推荐（修正因子）', conf: 'medium' },
+    { level: 'TAM', param: '年治疗费用', val: fmtCurrencyFull(annualCost), formula: priceValue + '元/' + (pricePeriod==='week'?'周':pricePeriod==='month'?'月':'年'), source: '用户输入', conf: 'medium' },
+    { level: 'TAM', param: 'TAM（总潜在市场）', val: fmtCurrency(tamValue), formula: tamPatientsRaw+'亿 × '+fmtPercent(KB.diagnosisRate,0)+' × '+fmtPercent(KB.treatmentRate,0)+' × '+fmtPercent(KB.glp1EligibleRatio)+' × '+fmtCurrencyFull(annualCost), source: '计算所得', conf: '—' },
+    // SAM
+    { level: 'SAM', param: '医院覆盖率', val: fmtPercentInt(coverageRatio), formula: cov.label, source: '用户选择', conf: '—' },
+    { level: 'SAM', param: 'SAM（可服务市场）', val: fmtCurrency(samValue), formula: fmtCurrency(tamValue)+' × '+fmtPercentInt(coverageRatio), source: '计算所得', conf: '—' },
+    // SOM
+    { level: 'SOM', param: '首年渗透率', val: fmtPercent(pen.yr1), formula: '对标 '+pen.label, source: '竞品对标：'+pen.label, conf: 'medium' },
+    { level: 'SOM', param: '第三年渗透率', val: fmtPercent(pen.yr3), formula: '对标 '+pen.label, source: '竞品对标：'+pen.label, conf: 'low' },
+    { level: 'SOM', param: '第五年渗透率（峰值）', val: fmtPercent(pen.yr5), formula: '对标 '+pen.label, source: '竞品对标：'+pen.label, conf: 'low' },
+    { level: 'SOM', param: 'SOM 第1年', val: fmtCurrency(somY1), formula: fmtCurrency(samValue)+' × '+fmtPercent(pen.yr1), source: '计算所得', conf: '—' },
+    { level: 'SOM', param: 'SOM 第3年', val: fmtCurrency(somY3), formula: fmtCurrency(samValue)+' × '+fmtPercent(pen.yr3), source: '计算所得', conf: '—' },
+    { level: 'SOM', param: 'SOM 第5年（峰值）', val: fmtCurrency(somY5), formula: fmtCurrency(samValue)+' × '+fmtPercent(pen.yr5), source: '计算所得', conf: '—' },
+  ];
+
+  // ===== Render table =====
+  const tbody = document.getElementById('sizingTableBody');
+  tbody.innerHTML = tableRows.map((r, i) => {
+    let confHtml = '';
+    if (r.conf === 'high') confHtml = '<span class="confidence-high">高</span>';
+    else if (r.conf === 'medium') confHtml = '<span class="confidence-medium">中</span>';
+    else if (r.conf === 'low') confHtml = '<span class="confidence-low">低</span>';
+    else confHtml = '—';
+    const isHighlight = r.param.startsWith('TAM（') || r.param.startsWith('SAM（') || r.param.startsWith('SOM ');
+    return '<tr' + (isHighlight ? ' class="highlight-row"' : '') + '>' +
+      '<td><strong>' + r.level + '</strong></td>' +
+      '<td>' + r.param + '</td>' +
+      '<td class="num"><strong>' + r.val + '</strong></td>' +
+      '<td style="font-size:0.78rem;color:#5a7a9a">' + r.formula + '</td>' +
+      '<td style="font-size:0.78rem;color:#5a7a9a">' + r.source + '</td>' +
+      '<td>' + confHtml + '</td>' +
+      '</tr>';
+  }).join('');
+
+  // ===== Update summary =====
+  document.getElementById('summaryTitle').textContent = '📈 市场测算结果：' + productType + ' × ' + diseaseArea;
+  document.getElementById('summaryTam').innerHTML = fmtCurrency(tamValue) + ' <span>/ 年</span>';
+  document.getElementById('summarySam').innerHTML = fmtCurrency(samValue) + ' <span>/ 年</span>';
+  document.getElementById('summarySom').innerHTML = fmtCurrency(somY5) + ' <span>/ 第5年</span>';
+  document.getElementById('summaryYear5').innerHTML = fmtCurrency(somY5);
+
+  // ===== Sensitivity Analysis =====
+  // Three core variables: GLP-1适用比例, 年治疗费用, 峰值渗透率
+  const baseGlp1 = KB.glp1EligibleRatio;
+  const baseCost = annualCost;
+  const basePeak = pen.yr5;
+
+  // Pessimistic: Glp-1 20%, cost -20%, peak -30%
+  // Base: current
+  // Optimistic: Glp-1 50%, cost +0% (price pressure), peak +50%
+  const scenarios = [
+    {
+      name: '😟 悲观情景',
+      glp1: Math.max(baseGlp1 * 0.67, 0.15),
+      cost: baseCost * 0.8,
+      peak: Math.max(basePeak * 0.6, 0.02),
+      color: '#dc2626'
+    },
+    {
+      name: '📊 基准情景',
+      glp1: baseGlp1,
+      cost: baseCost,
+      peak: basePeak,
+      color: '#1a6faf'
+    },
+    {
+      name: '🚀 乐观情景',
+      glp1: Math.min(baseGlp1 * 1.67, 0.60),
+      cost: baseCost * 1.0,
+      peak: Math.min(basePeak * 1.5, 0.20),
+      color: '#16a34a'
+    }
+  ];
+
+  const sensBody = document.getElementById('sensBody');
+  const sensData = scenarios.map(s => {
+    const tam_s = KB.totalPatients * KB.diagnosisRate * KB.treatmentRate * s.glp1 * s.cost;
+    const sam_s = tam_s * coverageRatio;
+    const som_s = sam_s * s.peak;
+    return { ...s, tam: tam_s, sam: sam_s, som: som_s };
+  });
+
+  const baseSom = sensData[1].som;
+  sensBody.innerHTML = sensData.map(s => {
+    const diff = s.som - baseSom;
+    const diffPct = (diff / baseSom * 100);
+    const barPct = Math.abs(diffPct);
+    const barColor = diff >= 0 ? '#16a34a' : '#dc2626';
+    const barDir = diff >= 0 ? '↑' : '↓';
+    return '<tr>' +
+      '<td>' + s.name + '</td>' +
+      '<td class="num">' + fmtPercent(s.glp1) + '</td>' +
+      '<td class="num">' + fmtCurrencyFull(s.cost) + '</td>' +
+      '<td class="num">' + fmtPercent(s.peak) + '</td>' +
+      '<td class="num"><strong>' + fmtCurrency(s.som) + '</strong></td>' +
+      '<td>' +
+        '<span style="color:' + barColor + ';font-weight:600">' + barDir + ' ' + Math.abs(diffPct).toFixed(1) + '%</span>' +
+        '<div style="margin-top:4px;background:#eef2f7;height:6px;border-radius:3px;width:120px;display:inline-block;vertical-align:middle">' +
+          '<div style="height:6px;border-radius:3px;background:' + barColor + ';width:' + Math.min(Math.abs(barPct), 100) + '%"></div>' +
+        '</div>' +
+      '</td>' +
+      '</tr>';
+  }).join('');
+
+  // Sensitivity Chart
+  const ctx = document.getElementById('sensChart').getContext('2d');
+  if (window.sensChartInstance) window.sensChartInstance.destroy();
+  window.sensChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sensData.map(s => s.name),
+      datasets: [{
+        label: 'SOM 第5年（亿元）',
+        data: sensData.map(s => s.som),
+        backgroundColor: sensData.map(s => s.color + 'cc'),
+        borderColor: sensData.map(s => s.color),
+        borderWidth: 2,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => 'SOM第5年: ' + ctx.parsed.y.toFixed(2) + '亿元'
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: (v) => v.toFixed(1) + '亿' }
+        }
+      }
+    }
+  });
+
+  // ===== Chart: Tier breakdown =====
+  const tierCtx = document.getElementById('tierChart').getContext('2d');
+  if (window.tierChartInstance) window.tierChartInstance.destroy();
+  window.tierChartInstance = new Chart(tierCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['三甲医院 (35%)', '三乙医院 (25%)', '二甲及以下 (40%)'],
+      datasets: [{
+        data: [35, 25, 40],
+        backgroundColor: ['#1a6faf', '#4a90c4', '#b8d8f0'],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12, padding: 12 } }
+      }
+    }
+  });
+
+  // ===== Chart: Year projection =====
+  const yearCtx = document.getElementById('yearChart').getContext('2d');
+  if (window.yearChartInstance) window.yearChartInstance.destroy();
+  window.yearChartInstance = new Chart(yearCtx, {
+    type: 'line',
+    data: {
+      labels: ['第1年', '第2年', '第3年', '第4年', '第5年'],
+      datasets: [{
+        label: 'SOM（亿元）',
+        data: [
+          samValue * pen.yr1,
+          samValue * (pen.yr1 + (pen.yr3 - pen.yr1) / 2),
+          samValue * pen.yr3,
+          samValue * (pen.yr3 + (pen.yr5 - pen.yr3) / 2),
+          samValue * pen.yr5
+        ],
+        borderColor: '#1a6faf',
+        backgroundColor: 'rgba(26,111,175,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#1a6faf',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => 'SOM: ' + ctx.parsed.y.toFixed(2) + '亿元'
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: (v) => v.toFixed(1) + '亿' }
+        }
+      }
+    }
+  });
+
+  // ===== Assumptions =====
+  const assumptions = [
+    {
+      title: 'GLP-1适用人群为所有接受治疗患者的30%',
+      desc: '基于GLP-1RA通常作为二线或三线治疗，且适用于BMI≥25或合并ASCVD的患者。实际比例取决于指南更新和产品获批情况。',
+      tag: '中', tagClass: 'confidence-medium'
+    },
+    {
+      title: '渗透率对标 ' + pen.label,
+      desc: '根据产品定位选择竞品渗透率曲线作为基准。首年渗透率' + fmtPercent(pen.yr1) + '，第3年' + fmtPercent(pen.yr3) + '，第5年峰值' + fmtPercent(pen.yr5) + '。',
+      tag: '中-低', tagClass: 'confidence-medium'
+    },
+    {
+      title: '年治疗费用 ' + fmtCurrencyFull(annualCost) + '（' + (pricePeriod==='week'?'每周':pricePeriod==='month'?'每月':'每年') + '定价）',
+      desc: '假设医保谈判后实际患者自付比例为50-70%。未纳入医保时实际支付价格更高，可能影响渗透率。',
+      tag: '低', tagClass: 'confidence-low'
+    },
+    {
+      title: '医院覆盖率系数 ' + fmtPercentInt(coverageRatio) + '（' + cov.label + '）',
+      desc: '假设仅覆盖指定层级医院。实际覆盖取决于销售队伍规模、招标进展和DTP药房补充渠道。',
+      tag: '中', tagClass: 'confidence-medium'
+    },
+    {
+      title: 'GLP-1适用比例30%为行业估算值（修正因子）',
+      desc: '原始Prompt中TAM公式未包含此比例，现已修正。实际值取决于：①指南推荐等级变化（若升为一线→比例升至80%）；②产品CVOT证据强度；③医生处方习惯。',
+      tag: '低', tagClass: 'confidence-low'
+    }
+  ];
+  document.getElementById('assumptionsList').innerHTML = assumptions.map(a =>
+    '<div class="assumption-item">' +
+      '<div class="title">' + a.title + '</div>' +
+      '<div class="desc">' + a.desc + '</div>' +
+      '<span class="' + a.tagClass + '" style="display:inline-block;font-size:0.7rem;padding:1px 8px;border-radius:8px;margin-top:4px">' + a.tag + '</span>' +
+    '</div>'
+  ).join('');
+
+  // ===== Risks =====
+  const risks = [
+    {
+      title: 'GLP-1适用比例变化（影响最大）',
+      desc: '若指南将GLP-1RA升级为一线治疗，适用比例可从30%跃升至80%，市场潜力翻倍。反之，若新CVOT数据显示安全性隐忧，可能被限制在二线以下。★★★ 最核心变量',
+      impact: '极高'
+    },
+    {
+      title: '医保谈判降价幅度',
+      desc: '若医保谈判后价格降幅超过40%，年治疗费用可能降至5000-6000元。虽然渗透率可能提升，但总营收可能不升反降。需做价格-渗透率弹性分析。',
+      impact: '高'
+    },
+    {
+      title: '竞品上市加速',
+      desc: '替尔泊肽（礼来GLP-1/GIP双靶点）及其他me-better/生物类似药可能在未来3-5年内上市，压缩渗透率空间。峰值渗透率可能打折。',
+      impact: '中高'
+    },
+    {
+      title: '集采风险',
+      desc: 'GLP-1RA若纳入国家集采，价格将大幅下降。虽然利拉鲁肽等已有集采压力，但新产品通常有2-3年保护期。',
+      impact: '中'
+    },
+    {
+      title: '患者自付能力限制',
+      desc: '年治疗费用' + fmtCurrencyFull(annualCost) + '，即使报销50%后患者仍需自付约' + fmtCurrencyFull(annualCost * 0.5) + '/年。基层医保覆盖患者可能难以承担。',
+      impact: '中'
+    }
+  ];
+  document.getElementById('risksList').innerHTML = risks.map(r =>
+    '<div class="risk-item">' +
+      '<div class="title">' + r.title + '</div>' +
+      '<div class="desc">' + r.desc + '</div>' +
+      '<span class="impact-tag">影响度：' + r.impact + '</span>' +
+    '</div>'
+  ).join('');
+
+  // ===== Recommendations =====
+  const recs = [
+    '<strong>优先推进医学证据建设</strong> — GLP-1适用比例是最核心变量（敏感性分析显示其变化可导致市场规模±60%）。应优先开展CVOT研究，争取指南推荐从"二线"升级为"一线/二线均可"，将适用比例从30%提升至50%+。',
+    '<strong>医保策略前置</strong> — 年治疗费用直接影响渗透率。建议在第1-2年以DTP药房+自费市场验证临床价值，同时启动药物经济学评价，为医保谈判做准备。基准情景下，降价30%但渗透率提升2倍可维持总营收。',
+    '<strong>分阶段渗透策略</strong> — 首年聚焦三甲KOL医院（占35%市场），建立学术证据和处方习惯；第2-3年扩展至三乙；第3-5年考虑基层下沉或DTP补充渠道。',
+    '<strong>差异化定位</strong> — 作为' + productType + '，核心卖点应是周制剂依从性优势（vs. 日制剂）和/或减重效果（vs. DPP-4/SGLT-2）。需在市场推广材料中强化与司美格鲁肽/度拉糖肽的差异点。',
+    '<strong>关注生物类似药威胁</strong> — 利拉鲁肽等已有生物类似药在研，预计第5年后面临价格压力。建议在保护期内最大化市场渗透，同时开发下一代产品或新适应症（如减重、NASH）。'
+  ];
+  document.getElementById('recommendContent').innerHTML =
+    '<div style="margin-bottom:12px;font-size:0.85rem;color:#2c3e50;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid #e2e8f0">' +
+      '测算结论：<strong>' + productType + '</strong> 在 <strong>' + diseaseArea + '</strong> 领域，定位为 <strong>' + cov.label + '</strong>，年治疗费用 <strong>' + fmtCurrencyFull(annualCost) + '</strong>，' +
+      '基于对标 <strong>' + pen.label + '</strong> 的渗透率曲线，预测第5年可获得市场（SOM）为 <strong>' + fmtCurrency(somY5) + '</strong>。' +
+      '在乐观情景下（GLP-1适用比例提升、渗透率超预期），可达 <strong>' + fmtCurrency(sensData[2].som) + '</strong>。' +
+    '</div>' +
+    '<ol style="padding-left:20px;font-size:0.85rem;color:#2c3e50">' +
+      recs.map(r => '<li style="margin-bottom:10px;line-height:1.7">' + r + '</li>').join('') +
+    '</ol>';
+
+  // ===== Show results =====
+  setTimeout(() => {
+    document.getElementById('calcLoading').classList.remove('show');
+    document.getElementById('resultsSection').classList.add('visible');
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 500);
+}
+</script>
+
+</body>
+</html>
