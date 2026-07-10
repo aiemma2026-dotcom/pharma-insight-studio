@@ -1,0 +1,46 @@
+{
+  "disease": {
+    "name": "Type 2 Diabetes Mellitus",
+    "shortName": "T2DM",
+    "patientPopulation": 140000000,
+    "diagnosisRate": 0.36,
+    "treatmentRate": 0.32,
+    "source": "IDF 2025 & 中国2型糖尿病防治指南2024"
+  },
+
+  "hospitalCoverage": {
+    "tertiaryA": 0.35,
+    "tertiaryB": 0.25,
+    "secondaryAndBelow": 0.40,
+    "targetMarket": 0.60
+  },
+
+  "treatmentCost": {
+    "metformin": 2000,
+    "dpp4": 6000,
+    "glp1": 9600
+  },
+
+  "insurance": {
+    "coverage": "50%-70%",
+    "status": "部分GLP-1纳入医保"
+  },
+
+  "competitors": [
+    {
+      "name": "利拉鲁肽",
+      "launchYear": 2011,
+      "peakPenetration": 0.08
+    },
+    {
+      "name": "度拉糖肽",
+      "launchYear": 2018,
+      "peakPenetration": 0.06
+    },
+    {
+      "name": "司美格鲁肽注射",
+      "launchYear": 2021,
+      "peakPenetration": 0.12
+    }
+  ]
+}
