@@ -1,4 +1,5 @@
 Pharma Insight Studio
+Pharma Insight Studio
 AI-powered Pharma Market Analysis Platform
 
 Transform complex pharmaceutical market data into actionable intelligence — powered by large language models and domain-specific analytics.
