@@ -1,0 +1,11 @@
+{
+  "base": {
+    "penetrationRate": 0.08
+  },
+  "optimistic": {
+    "penetrationRate": 0.12
+  },
+  "pessimistic": {
+    "penetrationRate": 0.05
+  }
+}
