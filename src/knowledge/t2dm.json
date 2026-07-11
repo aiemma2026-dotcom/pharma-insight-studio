@@ -1,46 +1,171 @@
 {
-  "disease": {
-    "name": "Type 2 Diabetes Mellitus",
+  "metadata": {
+    "diseaseName": "Type 2 Diabetes Mellitus",
     "shortName": "T2DM",
-    "patientPopulation": 140000000,
-    "diagnosisRate": 0.36,
-    "treatmentRate": 0.32,
-    "source": "IDF 2025 & 中国2型糖尿病防治指南2024"
+    "indication": "Type 2 Diabetes",
+    "country": "China",
+    "version": "2.0",
+    "lastUpdated": "2026-07-11",
+    "source": [
+      "IDF Diabetes Atlas 2025",
+      "中国2型糖尿病防治指南（2024版）"
+    ]
   },
 
-  "hospitalCoverage": {
-    "tertiaryA": 0.35,
-    "tertiaryB": 0.25,
-    "secondaryAndBelow": 0.40,
-    "targetMarket": 0.60
+  "market": {
+    "patientPopulation": {
+      "value": 140000000,
+      "unit": "patients",
+      "confidence": "High",
+      "source": "IDF Diabetes Atlas 2025"
+    },
+
+    "diagnosisRate": {
+      "value": 0.36,
+      "confidence": "High",
+      "source": "中国2型糖尿病防治指南（2024版）"
+    },
+
+    "treatmentRate": {
+      "value": 0.32,
+      "confidence": "High",
+      "source": "中国2型糖尿病防治指南（2024版）"
+    }
   },
 
-  "treatmentCost": {
-    "metformin": 2000,
-    "dpp4": 6000,
-    "glp1": 9600
+  "hospital": {
+    "coverage": {
+      "tertiaryA": {
+        "value": 0.35,
+        "description": "三甲医院"
+      },
+      "tertiaryB": {
+        "value": 0.25,
+        "description": "三乙医院"
+      },
+      "secondaryAndBelow": {
+        "value": 0.40,
+        "description": "二甲及以下医院"
+      },
+      "targetMarket": {
+        "value": 0.60,
+        "description": "三甲+三乙"
+      }
+    }
+  },
+
+  "pricing": {
+    "annualTreatmentCost": {
+      "metformin": {
+        "value": 2000,
+        "currency": "CNY"
+      },
+      "dpp4": {
+        "value": 6000,
+        "currency": "CNY"
+      },
+      "glp1": {
+        "value": 9600,
+        "currency": "CNY"
+      }
+    }
   },
 
   "insurance": {
-    "coverage": "50%-70%",
-    "status": "部分GLP-1纳入医保"
+    "status": "Partial Reimbursement",
+
+    "coverageRate": {
+      "min": 0.50,
+      "max": 0.70
+    },
+
+    "description": "部分GLP-1已纳入医保，不同地区存在差异"
   },
 
   "competitors": [
     {
       "name": "利拉鲁肽",
+
       "launchYear": 2011,
-      "peakPenetration": 0.08
+
+      "pricePerWeek": 800,
+
+      "year1Penetration": 0.012,
+
+      "peakPenetration": 0.08,
+
+      "peakYear": 5,
+
+      "reimbursed": true
     },
+
     {
       "name": "度拉糖肽",
+
       "launchYear": 2018,
-      "peakPenetration": 0.06
+
+      "pricePerWeek": 500,
+
+      "year1Penetration": 0.009,
+
+      "peakPenetration": 0.06,
+
+      "peakYear": 5,
+
+      "reimbursed": true
     },
+
     {
       "name": "司美格鲁肽注射",
+
       "launchYear": 2021,
-      "peakPenetration": 0.12
+
+      "pricePerWeek": 800,
+
+      "year1Penetration": 0.015,
+
+      "peakPenetration": 0.12,
+
+      "peakYear": 5,
+
+      "reimbursed": true
+    },
+
+    {
+      "name": "司美格鲁肽口服",
+
+      "launchYear": 2024,
+
+      "pricePerWeek": 800,
+
+      "year1Penetration": 0.008,
+
+      "peakPenetration": 0.05,
+
+      "peakYear": 5,
+
+      "reimbursed": false
     }
-  ]
+  ],
+
+  "assumptions": {
+    "targetPopulationRatio": {
+      "value": 1.0,
+      "description": "默认100%的已诊断且接受治疗患者均作为潜在市场，情景分析时可调整为30%、50%等。"
+    },
+
+    "basePeakPenetration": {
+      "value": 0.08,
+      "description": "默认采用GLP-1周制剂第5年峰值渗透率8%，对标利拉鲁肽市场表现。"
+    },
+
+    "peakYear": {
+      "value": 5,
+      "description": "默认第5年达到峰值，之后进入平台期。"
+    },
+
+    "currency": {
+      "value": "CNY"
+    }
+  }
 }
