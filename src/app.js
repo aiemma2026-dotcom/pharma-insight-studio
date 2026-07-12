@@ -1,0 +1,1 @@
+console.log("🚀 Pharma Market App Started");
