@@ -1,0 +1,28 @@
+{
+  "tiers": [
+    {
+      "id": "tertiaryA",
+      "name": "Tier 3A",
+      "coverage": 0.35,
+      "description": "三甲医院"
+    },
+    {
+      "id": "tertiaryB",
+      "name": "Tier 3B",
+      "coverage": 0.25,
+      "description": "三乙医院"
+    },
+    {
+      "id": "target603",
+      "name": "Tier 3A + Tier 3B",
+      "coverage": 0.60,
+      "description": "目标市场"
+    },
+    {
+      "id": "secondary",
+      "name": "Tier 2 and Below",
+      "coverage": 0.40,
+      "description": "基层市场"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "products": [
+    {
+      "id": "glp1_weekly",
+      "name": "GLP-1 Weekly",
+      "defaultAnnualCost": 9600
+    },
+    {
+      "id": "dpp4",
+      "name": "DPP-4",
+      "defaultAnnualCost": 6000
+    },
+    {
+      "id": "metformin",
+      "name": "Metformin",
+      "defaultAnnualCost": 2000
+    }
+  ]
+}
