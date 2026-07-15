@@ -14,7 +14,7 @@ body {
   background: #f3f6fc;
   color: #1a2332;
   line-height: 1.6;
-}
+}pharma-market-sizing
 
 /* ===== Layout ===== */
 .app-container { max-width: 1320px; margin: 0 auto; padding: 24px 20px 60px; }
@@ -251,73 +251,6 @@ body {
 .switch input:checked + .slider::before { transform: translateX(18px); }
 .switch-label { font-size: 0.82rem; color: #2c3e50; }
 
-/* ===== Executive Insight Card ===== */
-.exec-insight {
-  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
-  border: 1.5px solid #d0e0f0; border-radius: 14px;
-  margin-bottom: 24px; overflow: hidden;
-  box-shadow: 0 2px 12px rgba(11,42,74,0.06);
-}
-.exec-insight-header {
-  background: linear-gradient(135deg, #0b2a4a 0%, #1a4a7a 100%);
-  color: #fff; padding: 14px 24px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.exec-insight-header h3 { font-size: 1rem; font-weight: 700; letter-spacing: 0.5px; }
-.exec-insight-header .badge-insight {
-  font-size: 0.7rem; background: rgba(255,255,255,0.15);
-  padding: 3px 10px; border-radius: 12px; font-weight: 500;
-}
-.exec-insight-body { padding: 20px 24px; }
-
-/* Rating row */
-.rating-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-.rating-card {
-  text-align: center; padding: 14px 8px 12px;
-  background: #fafcff; border-radius: 10px;
-  border: 1px solid #e8edf5;
-}
-.rating-card .label { font-size: 0.78rem; font-weight: 600; color: #2c3e50; margin-bottom: 4px; }
-.rating-card .stars { font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 2px; }
-.rating-card .stars .filled { color: #f59e0b; }
-.rating-card .stars .empty { color: #dce3ed; }
-.rating-card .sub-text { font-size: 0.7rem; color: #7a8ba3; }
-.rating-card.highlight-green { border-color: #b8e0c0; background: #f0faf2; }
-.rating-card.highlight-amber { border-color: #f0d8a8; background: #fffbf0; }
-.rating-card.highlight-red { border-color: #f0b8b8; background: #fff8f8; }
-
-/* Executive Summary block */
-.exec-summary {
-  background: #f3f6fc; border-radius: 10px;
-  padding: 14px 18px; margin-bottom: 16px;
-  border-left: 4px solid #1a6faf;
-}
-.exec-summary .label { font-size: 0.75rem; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-.exec-summary .text { font-size: 0.88rem; color: #1a2332; line-height: 1.7; }
-
-/* Strategic Recommendations in insight card */
-.exec-strat { }
-.exec-strat .label { font-size: 0.75rem; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.exec-strat-item {
-  display: flex; gap: 10px; padding: 8px 0;
-  border-bottom: 1px solid #eef2f7;
-  font-size: 0.85rem; line-height: 1.6;
-}
-.exec-strat-item:last-child { border-bottom: none; }
-.exec-strat-item .num {
-  flex-shrink: 0; width: 22px; height: 22px;
-  background: #1a6faf; color: #fff; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.72rem; font-weight: 700; margin-top: 2px;
-}
-.exec-strat-item .text { color: #2c3e50; }
-
-/* Responsive */
-@media (max-width: 700px) {
-  .rating-grid { grid-template-columns: 1fr; }
-  .exec-insight-header { flex-direction: column; gap: 6px; text-align: center; }
-}
-
 /* ===== Footer ===== */
 .footer { text-align: center; padding: 28px 0 10px; font-size: 0.78rem; color: #8ea0b8; border-top: 1px solid #eef2f7; margin-top: 32px; }
 
@@ -474,48 +407,6 @@ body {
           <div class="big-number" style="font-size:1.8rem" id="summaryYear5">—</div>
           <div class="meta">第五年预期营收（SOM 峰值）</div>
         </div>
-      </div>
-    </div>
-
-    <!-- ===== Executive Insight Card ===== -->
-    <div class="exec-insight fade-in" id="execInsightCard">
-      <div class="exec-insight-header">
-        <h3>🏛️ Executive Insight Card</h3>
-        <span class="badge-insight" id="insightDate"></span>
-      </div>
-      <div class="exec-insight-body">
-
-        <!-- Ratings -->
-        <div class="rating-grid" id="ratingGrid">
-          <div class="rating-card" id="ratingAttractiveness">
-            <div class="label">Market Attractiveness</div>
-            <div class="stars" id="starsAttractiveness"></div>
-            <div class="sub-text" id="subAttractiveness">...</div>
-          </div>
-          <div class="rating-card" id="ratingPotential">
-            <div class="label">Commercial Potential</div>
-            <div class="stars" id="starsPotential"></div>
-            <div class="sub-text" id="subPotential">...</div>
-          </div>
-          <div class="rating-card" id="ratingRisk">
-            <div class="label">Launch Risk</div>
-            <div class="stars" id="starsRisk"></div>
-            <div class="sub-text" id="subRisk">...</div>
-          </div>
-        </div>
-
-        <!-- Executive Summary -->
-        <div class="exec-summary">
-          <div class="label">📄 Executive Summary</div>
-          <div class="text" id="execSummaryText">...</div>
-        </div>
-
-        <!-- Strategic Recommendations -->
-        <div class="exec-strat">
-          <div class="label">🎯 Strategic Recommendations</div>
-          <div id="execStratList"></div>
-        </div>
-
       </div>
     </div>
 
@@ -829,125 +720,6 @@ function calculate() {
   document.getElementById('summarySom').innerHTML = fmtCurrency(somY5) + ' <span>/ 第5年</span>';
   document.getElementById('summaryYear5').innerHTML = fmtCurrency(somY5);
 
-  // ===== Executive Insight Card =====
-  // Date
-  const now = new Date();
-  document.getElementById('insightDate').textContent = '评估日期：' + now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
-
-  // Helper: render stars
-  function renderStars(rating, max) {
-    max = max || 5;
-    let filled = '';
-    let empty = '';
-    const fullStars = Math.floor(rating);
-    const hasHalf = rating - fullStars >= 0.3;
-    for (let i = 0; i < fullStars; i++) filled += '★';
-    if (hasHalf) filled += '★'; // approximate half as full for simplicity
-    const emptyCount = max - fullStars - (hasHalf ? 1 : 0);
-    for (let i = 0; i < emptyCount; i++) empty += '★';
-    return '<span class="filled">' + filled + '</span><span class="empty">' + empty + '</span>';
-  }
-
-  // --- Market Attractiveness ---
-  // Factors: TAM size, disease prevalence, class growth trend
-  let attractivenessStars = 0;
-  let attractSub = '';
-  if (tamValue >= 1000) { attractivenessStars = 5; attractSub = '超大市场（TAM ≥ 1,000亿）'; }
-  else if (tamValue >= 300) { attractivenessStars = 4; attractSub = '大型市场（TAM ' + tamValue.toFixed(0) + '亿）'; }
-  else if (tamValue >= 80) { attractivenessStars = 3; attractSub = '中等市场（TAM ' + tamValue.toFixed(0) + '亿）'; }
-  else if (tamValue >= 20) { attractivenessStars = 2; attractSub = '小型市场（TAM ' + tamValue.toFixed(0) + '亿）'; }
-  else { attractivenessStars = 1; attractSub = '利基市场（TAM ' + tamValue.toFixed(0) + '亿）'; }
-  // GLP-1 bonus for hot class
-  if (productType.includes('GLP-1') || productType.includes('双靶')) attractivenessStars = Math.min(attractivenessStars + 0.5, 5);
-  attractivenessStars = Math.round(attractivenessStars);
-  document.getElementById('starsAttractiveness').innerHTML = renderStars(attractivenessStars);
-  document.getElementById('subAttractiveness').textContent = attractSub + ' · ' + diseaseArea + ' 患者1.4亿';
-
-  // --- Commercial Potential ---
-  // Factors: SAM/TAM ratio, competitive positioning, SOM magnitude
-  const coverageEfficiency = coverageRatio; // 0.35 - 1.0
-  let potentialStars = 0;
-  let potentialSub = '';
-  // Base from SOM Y5
-  if (somY5 >= 50) { potentialStars = 5; potentialSub = '极高商业价值（SOM ≥ 50亿）'; }
-  else if (somY5 >= 20) { potentialStars = 4; potentialSub = '高商业价值（SOM ' + somY5.toFixed(1) + '亿）'; }
-  else if (somY5 >= 5) { potentialStars = 3; potentialSub = '中等商业价值（SOM ' + somY5.toFixed(1) + '亿）'; }
-  else if (somY5 >= 1) { potentialStars = 2; potentialSub = '有限商业价值（SOM ' + somY5.toFixed(1) + '亿）'; }
-  else { potentialStars = 1; potentialSub = '低商业价值（SOM ' + (somY5*100).toFixed(0) + '万）'; }
-  // Positioning bonus
-  if (positioning === 'best-in-class') potentialStars = Math.min(potentialStars + 0.5, 5);
-  // Coverage discount
-  if (coverageRatio < 0.5) potentialStars = Math.max(potentialStars - 0.5, 1);
-  potentialStars = Math.round(potentialStars);
-  document.getElementById('starsPotential').innerHTML = renderStars(potentialStars);
-  document.getElementById('subPotential').textContent = potentialSub + ' · 对标' + pen.label;
-
-  // --- Launch Risk (inverse: more stars = lower risk) ---
-  let riskScore = 0; // 1-5, 5 = lowest risk
-  let riskSub = '';
-  // Competition: me-too is riskier
-  if (positioning === 'best-in-class') riskScore += 2;
-  else if (positioning === 'first-in-class') riskScore += 1.5;
-  else riskScore += 1; // me-too
-  // Pricing risk: higher price = more risk
-  if (annualCost <= 5000) riskScore += 1.5;
-  else if (annualCost <= 10000) riskScore += 1;
-  else riskScore += 0.5;
-  // Market familiarity: GLP-1 is established
-  if (productType.includes('GLP-1')) riskScore += 1;
-  else riskScore += 0.5;
-  // Hospital coverage: broader = less risk
-  if (coverageRatio >= 0.6) riskScore += 0.5;
-  // Penetration benchmark
-  if (pen.yr5 >= 0.10) riskScore += 0.5; // higher peak = more proven path
-  riskScore = Math.round(Math.min(riskScore, 5));
-  if (riskScore <= 2) riskSub = '高风险 · 需谨慎推进';
-  else if (riskScore === 3) riskSub = '中风险 · 需关键风险管理';
-  else if (riskScore >= 4) riskSub = '低风险 · 执行窗口期良好';
-  document.getElementById('starsRisk').innerHTML = renderStars(riskScore);
-  document.getElementById('subRisk').textContent = riskSub;
-
-  // Highlight colors
-  document.getElementById('ratingAttractiveness').className = 'rating-card' + (attractivenessStars >= 4 ? ' highlight-green' : attractivenessStars >= 3 ? ' highlight-amber' : ' highlight-red');
-  document.getElementById('ratingPotential').className = 'rating-card' + (potentialStars >= 4 ? ' highlight-green' : potentialStars >= 3 ? ' highlight-amber' : ' highlight-red');
-  document.getElementById('ratingRisk').className = 'rating-card' + (riskScore >= 4 ? ' highlight-green' : riskScore >= 3 ? ' highlight-amber' : ' highlight-red');
-
-  // --- Executive Summary (≈100字) ---
-  const positioningCN = positioning === 'me-too' ? '跟随者' : positioning === 'best-in-class' ? '同类最佳' : '首创';
-  const summaryText =
-    '本测算针对一款' + productType + '（' + positioningCN + '定位）用于' + diseaseArea + '领域。' +
-    '市场总潜在规模（TAM）约' + fmtCurrency(tamValue) + '/年，' +
-    '经医院层级筛选后可服务市场（SAM）约' + fmtCurrency(samValue) + '/年。' +
-    '对标' + pen.label + '渗透率曲线，预测第5年可获得市场（SOM）' + fmtCurrency(somY5) + '。' +
-    '三个核心驱动变量为：GLP-1适用比例（当前假设30%）、医保后年治疗费用（' + fmtCurrencyFull(annualCost) + '）、峰值渗透率（' + fmtPercent(pen.yr5) + '）。' +
-    '敏感性分析显示，GLP-1适用比例从30%提升至50%可使市场规模扩大70%+，是最大的价值杠杆。';
-  document.getElementById('execSummaryText').textContent = summaryText;
-
-  // --- Strategic Recommendations (三条) ---
-  let stratItems = [];
-  if (positioning === 'me-too') {
-    stratItems = [
-      { text: '<strong>差异化定位突围：</strong>作为me-too产品，必须找到明确的差异化锚点——减重幅度、心血管获益或给药频次。建议对标司美格鲁肽的峰值渗透率（12%）而非度拉糖肽（6%），争取best-in-class定位。' },
-      { text: '<strong>加速医保准入：</strong>年治疗费用' + fmtCurrencyFull(annualCost) + '处于GLP-1类中位水平。建议在上市第1-2年通过药物经济学研究证明成本效益，力争纳入国家医保谈判，将患者自付降至3,000-5,000元/年，第3年渗透率有望翻倍。' },
-      { text: '<strong>分阶段精准覆盖：</strong>首年聚焦300家核心三甲医院内分泌科，建立学术证据和KOL背书；第2-3年扩展至1,000家三乙医院；同时布局DTP药房覆盖基层。5年累计覆盖目标：2,000家医院 + 500家DTP药房。' }
-    ];
-  } else if (positioning === 'best-in-class') {
-    stratItems = [
-      { text: '<strong>巩固KOL学术壁垒：</strong>作为best-in-class产品，应在上市前24个月启动大型CVOT/RWE研究，争取指南优先推荐。建议在3家顶级学术中心开展头对头比较研究（vs. 司美格鲁肽），生成差异化临床证据。' },
-      { text: '<strong>渗透率快速爬坡策略：</strong>司美格鲁肽的渗透率曲线（首年1.5%→峰值12%）已证明GLP-1市场天花板。建议采用双轨推广——医学部推动指南更新 + 市场部1,500人代表团队覆盖核心医院，争取第3年达到6-8%渗透率。' },
-      { text: '<strong>生命周期管理前置：</strong>鉴于GLP-1领域的竞争加剧（替尔泊肽2025+，多个生物类似药2028+），建议在第3年启动新适应症申报（减重、NASH、MACE），延长产品生命周期峰值。' }
-    ];
-  } else {
-    stratItems = [
-      { text: '<strong>先发优势最大化：</strong>作为first-in-class产品，应充分利用12-24个月的市场独占窗口。建议在上市前完成学术准备——包括指南撰写组KOL培育、3-5个大型真实世界研究设计、患者支持项目规划。' },
-      { text: '<strong>价格策略与准入谈判：</strong>参考利拉鲁肽定价策略（首年渗透率1.2%→峰值8%）。建议初始定价较司美格鲁肽溢价15-20%，同时准备两套医保谈判方案——降价40%换准入 vs. 降价25%换分类限制。' },
-      { text: '<strong>适应症扩展路径图：</strong>first-in-class产品的最大价值在于新适应症。建议在上市第2年启动减重适应症III期，第3年启动NASH/心衰探索性研究，构建"糖尿病+减重+心血管"三支柱价值体系。' }
-    ];
-  }
-  document.getElementById('execStratList').innerHTML = stratItems.map((item, idx) =>
-    '<div class="exec-strat-item"><span class="num">' + (idx + 1) + '</span><span class="text">' + item.text + '</span></div>'
-  ).join('');
-
   // ===== Sensitivity Analysis =====
   // Three core variables: GLP-1适用比例, 年治疗费用, 峰值渗透率
   const baseGlp1 = KB.glp1EligibleRatio;
@@ -1214,6 +986,8 @@ function calculate() {
   }, 500);
 }
 </script>
+
+<script type="module" src="../src/app.js"></script>
 
 </body>
 </html>
