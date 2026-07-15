@@ -151,12 +151,12 @@
   "assumptions": {
     "targetPopulationRatio": {
       "value": 1.0,
-      "description": "默认100%的已诊断且接受治疗患者均作为潜在市场，情景分析时可调整为30%、50%等。"
+      "description": "默认TAM基于100%的已诊断且接受治疗患者计算；实际GLP-1适用比例可在情景分析中调整（如30%、50%、100%）。"
     },
 
     "basePeakPenetration": {
       "value": 0.08,
-      "description": "默认采用GLP-1周制剂第5年峰值渗透率8%，对标利拉鲁肽市场表现。"
+      "description": "默认第5年峰值渗透率为8%，之后进入平台期；可在情景分析中调整为5%、12%等。"
     },
 
     "peakYear": {
