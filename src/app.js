@@ -4,9 +4,11 @@ console.log("🚀 Pharma Market App Started");
 
 const button = document.getElementById("calculateBtn");
 
-button.addEventListener("click", () => {
-    alert("Calculator Connected!");
-});
+if (button) {
+    button.addEventListener("click", () => {
+        alert("Calculator Connected!");
+    });
+}
 
 loadT2DMKnowledge()
     .then(data => {
